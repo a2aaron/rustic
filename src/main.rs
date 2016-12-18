@@ -26,28 +26,59 @@ impl Rand for Note {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Letter {
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
+// #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+// pub enum Letter {
+//     A,
+//     B,
+//     C,
+//     D,
+//     E,
+//     F,
+//     G,
+// }
+
+// const LETTER_VALUES: [Letter; 7] = {
+//     use Letter::*;
+//     [A, B, C, D, E, F, G]
+// };
+
+macro_rules! count {
+    () => { 0 };
+    ($x:expr) => { 1 };
+    ($x:expr, $($xs:expr),*) => { 1 + count!($($xs),*) }
 }
 
-const LETTER_VALUES: [Letter; 7] = {
-    use Letter::*;
-    [A, B, C, D, E, F, G]
-};
+macro_rules! randable_enum {
+    (pub enum $Name:ident { $($x:ident),* }) => {
+        #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+        pub enum $Name {
+            $($x),*
+        }
 
+        const VALUES: [$Name; count!($($x),*)] = {
+            use $Name::*;
+            [$($x),*]
+        };
 
-impl Rand for Letter {
-    fn rand<R: Rng>(rng: &mut R) -> Letter {
-        LETTER_VALUES[rng.gen_range(0, LETTER_VALUES.len())]
+        impl Rand for $Name {
+            fn rand<R: Rng>(rng: &mut R) -> Self {
+                VALUES[rng.gen_range(0, VALUES.len())]
+            }
+        }
     }
 }
+
+randable_enum! {
+    pub enum Letter {
+        A, B, C, D, E, F, G
+    }
+}
+
+// impl Rand for Letter {
+//     fn rand<R: Rng>(rng: &mut R) -> Letter {
+//         LETTER_VALUES[rng.gen_range(0, LETTER_VALUES.len())]
+//     }
+// }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Accidental {
@@ -55,7 +86,6 @@ pub enum Accidental {
     Flat,
     Natural,
 }
-
 
 const ACCIDENTAL_VALUES: [Accidental; 3] = {
     use Accidental::*;
