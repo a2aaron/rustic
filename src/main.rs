@@ -32,11 +32,10 @@ macro_rules! count {
 }
 
 macro_rules! randable_enum {
-    (pub enum $Name:ident { $($x:ident),* }) => {
-
+    (pub enum $Name:ident { $($x:ident,)* }) => {
         #[derive(Clone, Copy, Debug, PartialEq, Eq)]
         pub enum $Name {
-            $($x),*
+            $($x,)*
         }
 
         impl $Name {
@@ -88,7 +87,7 @@ randable_struct! {
 
 randable_enum! {
     pub enum Letter {
-        A, B, C, D, E, F, G
+        A, B, C, D, E, F, G,
     }
 }
 
@@ -96,13 +95,13 @@ randable_enum! {
     pub enum Accidental {
         Sharp,
         Flat,
-        Natural
+        Natural,
     }
 }
 
 randable_enum! {
     pub enum Mode {
         Major,
-        Minor
+        Minor,
     }
 }
